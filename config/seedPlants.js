@@ -27,7 +27,7 @@ const plants = [
      },
      {
         "name": "Alocasia Zebrina",
-        "latin_name": "Alocasia Zebrina",
+        "latinName": "Alocasia Zebrina",
         "about": "This plant has zebra-like stems and large, heart-shaping leaves. The Alocasia Zebrina is a tropical plant and in the jungle it gives shelter for small animals when there  is a tropical rain showser. This plant is not the easiest plant to take care, but with the right conditions this plant will shine in your livingroom!",
         "averageHeight": "around 0.5 m",
         "water": "1 x per week",
@@ -49,7 +49,7 @@ const plants = [
      },
      {
         "name": "Chinese Money Plant",
-        "latin_name": "Pilea Peperomioides",
+        "latinName": "Pilea Peperomioides",
         "about": "This Pilea, also known as the Chinese Money Plant or Pancake plant, is native to south China. This plant was very popular in 70s and is already for a couple years really popular. This plant is easy to take care of and a nice thing: this mother plant gives you a lot of baby pileas! ",
         "averageHeight": "around 0.3 m",
         "water": "1 x per week",
