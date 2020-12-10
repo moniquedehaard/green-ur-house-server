@@ -10,6 +10,7 @@ const saltRounds = 10;
 // Require the User model in order to interact with the database
 const User = require("../models/User.model");
 const Session = require("../models/Session.model");
+const Plants = require("../models/Plants.model")
 
 // Require necessary middlewares in order to control access to specific routes
 const shouldNotBeLoggedIn = require("../middlewares/shouldNotBeLoggedIn");
@@ -202,4 +203,15 @@ router.patch("/removeFromWishlist/:id", (req, res) => {
     .catch(err => console.log('Error while updating (removing) wishlist plants'))
 })
 
+// Give all information User (populated)
+router.get("/allInformationUser/:id", (req, res) => {
+  User
+    .findById(req.params.id)
+    .populate("favoritePlants")
+    .then(foundUser => {
+      console.log('Found User', foundUser)
+      res.json({foundUser: foundUser})
+    })
+    .catch(err => console.log("error", err))
+})
 module.exports = router;
