@@ -159,4 +159,25 @@ router.delete("/logout", isLoggedIn, (req, res) => {
     });
 });
 
+
+router.patch("/addToWishlist/:id", (req, res) => {
+  console.log('Req from add to wishlist', req.body)
+  const userId = req.params.id
+  const plantId = req.body.plantId
+
+  User
+    .findByIdAndUpdate(userId, {
+        $addToSet: { favoritePlants: plantId }
+      },
+      {
+        new: true
+      }
+    )
+    .then(updatedUser => {
+      console.log('Updated User: ',updatedUser)
+      res.json({updatedUser: updatedUser})
+    })
+    .catch(err => console.log('Error while updating wishlist plants'))
+})
+
 module.exports = router;
