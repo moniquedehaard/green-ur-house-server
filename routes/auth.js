@@ -160,6 +160,7 @@ router.delete("/logout", isLoggedIn, (req, res) => {
 });
 
 
+// Add plant to wishlist user
 router.patch("/addToWishlist/:id", (req, res) => {
   console.log('Req from add to wishlist', req.body)
   const userId = req.params.id
@@ -177,7 +178,28 @@ router.patch("/addToWishlist/:id", (req, res) => {
       console.log('Updated User: ',updatedUser)
       res.json({updatedUser: updatedUser})
     })
-    .catch(err => console.log('Error while updating wishlist plants'))
+    .catch(err => console.log('Error while updating (adding) wishlist plants'))
+})
+
+// Remove plant from wishlist urser
+router.patch("/removeFromWishlist/:id", (req, res) => {
+  console.log('Req from add to wishlist', req.body)
+  const userId = req.params.id
+  const plantId = req.body.plantId
+
+  User
+    .findByIdAndUpdate(userId, {
+        $pull: { favoritePlants: plantId }
+      },
+      {
+        new: true
+      }
+    )
+    .then(updatedUser => {
+      console.log('Updated User: ',updatedUser)
+      res.json({updatedUser: updatedUser})
+    })
+    .catch(err => console.log('Error while updating (removing) wishlist plants'))
 })
 
 module.exports = router;
