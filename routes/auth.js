@@ -217,30 +217,54 @@ router.get("/allInformationUser/:id", (req, res) => {
 })
 module.exports = router;
 
-
+// Add plant to home of user
 router.patch("/addToPlantsHome/:id", (req, res) => {
-  console.log('Req from add to houseplants', req.body)
   const userId = req.params.id
   const plantId = req.body.plantId
 
+  // Create a homeplant
   HomePlants
   .create({
     species: plantId,
     user: userId
   })
-  .then(plant =>
-    User
-    .findByIdAndUpdate(userId, {
-        $addToSet: { homePlants: plant._id }
-      },
-      {
-        new: true
-      }
-    )
-    .then(updatedUser => {
-      console.log('Updated User: ',updatedUser)
-      res.json({updatedUser: updatedUser})
+    .then(plant => {
+      console.log('Home plant added to db', plant)
+      // Update user with homeplant
+      User
+        .findByIdAndUpdate(userId, {
+          $addToSet: { homePlants: plantId }
+        },
+          {
+            new: true
+          }
+        )
+        .then(updatedUser => {
+          console.log('Updated User: ', updatedUser)
+          res.json({ updatedUser: updatedUser })
+        })
     })
-  )
-  .catch(err => console.log("Error while creating new plant"))
+  .catch(err => console.log("Error while creating new plant",err))
+})
+
+// Remove plant to home of user
+router.patch("/removePlantsHome/:id", (req, res) => {
+  const userId = req.params.id
+  const plantId = req.body.plantId
+
+  // Create a homeplant
+  HomePlants
+    .deleteOne({user: userId, species:plantId})
+    .then(() => {   
+      User.findByIdAndUpdate(userId,
+        {
+          $pull: { homePlants: plantId },
+        },
+        { new: true })
+        .then(updatedUser => {
+          console.log('FOUND USER TEST', updatedUser)
+          res.json({ updatedUser: updatedUser })
+        })
+    })
+  .catch(err => console.log("Error while creating new plant",err))
 })

@@ -18,12 +18,10 @@ const homePlantsSchema = new Schema(
             type: ObjectId,
             ref: Plants
         },
-        user:[
-            {
+        user:{
             type: ObjectId,
             ref: 'User'
             }
-        ]
     }
 );
 
