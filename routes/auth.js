@@ -10,7 +10,8 @@ const saltRounds = 10;
 // Require the User model in order to interact with the database
 const User = require("../models/User.model");
 const Session = require("../models/Session.model");
-const Plants = require("../models/Plants.model")
+const Plants = require("../models/Plants.model");
+const HomePlants = require("../models/HomePlants.model")
 
 // Require necessary middlewares in order to control access to specific routes
 const shouldNotBeLoggedIn = require("../middlewares/shouldNotBeLoggedIn");
@@ -215,3 +216,31 @@ router.get("/allInformationUser/:id", (req, res) => {
     .catch(err => console.log("error", err))
 })
 module.exports = router;
+
+
+router.patch("/addToPlantsHome/:id", (req, res) => {
+  console.log('Req from add to houseplants', req.body)
+  const userId = req.params.id
+  const plantId = req.body.plantId
+
+  HomePlants
+  .create({
+    species: plantId,
+    user: userId
+  })
+  .then(plant =>
+    User
+    .findByIdAndUpdate(userId, {
+        $addToSet: { homePlants: plant._id }
+      },
+      {
+        new: true
+      }
+    )
+    .then(updatedUser => {
+      console.log('Updated User: ',updatedUser)
+      res.json({updatedUser: updatedUser})
+    })
+  )
+  .catch(err => console.log("Error while creating new plant"))
+})

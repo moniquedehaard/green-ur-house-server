@@ -2,6 +2,7 @@ const mongoose = require('mongoose')
 const { Schema, model } = require("mongoose");
 const ObjectId = Schema.Types.ObjectId;
 const Plants = require("./Plants.model")
+const HomePlants = require("./HomePlants.model")
 
 // TODO: Please make sure you edit the user model to whatever makes sense in this case
 const userSchema = new Schema(
@@ -16,6 +17,12 @@ const userSchema = new Schema(
       type: ObjectId,
       ref: Plants
       }
+    ],
+    homePlants: [
+      {
+      type: ObjectId,
+      ref: HomePlants
+      }
     ]
   },
   {
@@ -26,3 +33,5 @@ const userSchema = new Schema(
 const User = model("User", userSchema);
 
 module.exports = User;
+
+
