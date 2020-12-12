@@ -21,7 +21,11 @@ const homePlantsSchema = new Schema(
         user:{
             type: ObjectId,
             ref: 'User'
-            }
+        },
+        notes: {
+            type: String,
+            default: 'Unknown'
+        }
     }
 );
 
