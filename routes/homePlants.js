@@ -37,13 +37,14 @@ router.post("/new", isLoggedIn, (req, res) => {
     const { plant, nickname, room, notes } = req.body
     console.log(plant)
 
+    // Find right plant
     Plant
         .findOne({ latinName: plant })
-        .then(plant => {
-            console.log('Found plant', plant)
+        .then(foundPlant => {
+            console.log('Found plant', foundPlant)
             HomePlants.create({
                 nickname: nickname,
-                species: plant._id,
+                species: foundPlant._id,
                 room: room,
                 notes: notes,
                 user: req.user._id
@@ -51,7 +52,7 @@ router.post("/new", isLoggedIn, (req, res) => {
                 console.log("NEW created homeplant", createdPlant)
                 // User updaten met plant ID
                 User.findByIdAndUpdate(req.user._id, {
-                    $addToSet: { homePlants: plant._id }
+                    $addToSet: { homePlants: foundPlant._id }
                 },
                     { new: true }
                 ).then(updatedUser => {
@@ -65,34 +66,72 @@ router.post("/new", isLoggedIn, (req, res) => {
 
 // Edit home plant
 router.post("/edit/:id", isLoggedIn, (req, res) => {
-    console.log(req.user)
     const { plant, nickname, room, notes } = req.body
-    console.log(plant)
 
     Plant
         .findOne({ latinName: plant })
-        .then(plant => {
-            console.log('Found plant', plant)
-            HomePlants.create({
-                nickname: nickname,
-                species: plant._id,
-                room: room,
-                notes: notes,
-                user: req.user._id
-            }).then(createdPlant => {
-                console.log("NEW created homeplant", createdPlant)
-                // User updaten met plant ID
-                User.findByIdAndUpdate(req.user._id, {
-                    $addToSet: { homePlants: plant._id }
+        .then(foundPlant => {
+            console.log('Found plant', foundPlant)
+
+            // Find the right homeplant
+            HomePlants
+                .findByIdAndUpdate(req.params.id, {
+                    nickname: nickname,
+                    species: foundPlant._id,
+                    room: room,
+                    notes: notes,
+                    user: req.user._id
                 },
                     { new: true }
+                ).then(updatedHomePlant => {
+                console.log("Updated homeplant", updatedHomePlant)
+
+                // Update user
+                    User.findByIdAndUpdate(req.user._id, {
+                        $addToSet: { homePlants: foundPlant._id }
+                    },
+                        { new: true }
+                    ).then(updatedUser => {
+                        console.log('Updated user', updatedUser);
+
+                        // Send response
+                        res.json(updatedUser)
+                    })
+                })
+        })
+        .catch(err => console.log(err))
+})
+
+
+// Edit home plant
+router.post("/delete/:id", isLoggedIn, (req, res) => {
+    console.log(req.user._id)
+    const { plant  } = req.body
+
+    // Update homeplant
+    HomePlants.findByIdAndRemove(req.params.id).then((rem) => {
+        // find plant
+        Plant.findOne({ latinName: plant })
+            .then(foundPlant => {
+                console.log('Found plant', foundPlant)
+                // else do pull request
+                User.findByIdAndUpdate(req.user._id, {
+                    $pull: { homePlants: foundPlant._id }
+                }, { new: true }
                 ).then(updatedUser => {
                     console.log('Updated user', updatedUser);
                     res.json(updatedUser)
-                 })
+                })
+                //
+                // Find if user has more than one plant of the same species
+                //HomePlants.find({ $and: [{ user: req.user._id }, { species: foundPlant._id }] })
+                //.then(numberHomePlantsSpecies => {
+                //console.log(numberHomePlantsSpecies.length)
+                //Multiple plants of same 
+                //if (numberHomePlantsSpecies.length > 1) {
             })
-        })
-        .catch(err => console.log(err))
+    })
+    .catch(err => console.log(err))
 })
 
 module.exports = router;
