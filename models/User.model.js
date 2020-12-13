@@ -12,18 +12,17 @@ const userSchema = new Schema(
       unique: true,
     },
     password: String,
+    profilePic: {
+      type: String,
+      default:  ''
+    },
     favoritePlants: [
       {
       type: ObjectId,
       ref: Plants
       }
     ],
-    homePlants: [
-      {
-      type: ObjectId,
-      ref: Plants
-      }
-    ]
+    homePlants: [ Object ]
   },
   {
     timestamps: true,

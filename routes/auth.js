@@ -17,6 +17,18 @@ const HomePlants = require("../models/HomePlants.model")
 const shouldNotBeLoggedIn = require("../middlewares/shouldNotBeLoggedIn");
 const isLoggedIn = require("../middlewares/isLoggedIn");
 
+// // Uploading images via icloud
+const multer = require("multer");
+const cloudinary = require("cloudinary");
+const multerStorageCloudinary = require("multer-storage-cloudinary");
+
+const storage = new multerStorageCloudinary.CloudinaryStorage({
+  cloudinary:  cloudinary.v2
+})
+const upload = multer({storage})
+
+
+
 router.get("/session", (req, res) => {
   // we dont want to throw an error, and just maintain the user as null
   if (!req.headers.authorization) {
@@ -36,7 +48,7 @@ router.get("/session", (req, res) => {
     });
 });
 
-router.post("/signup", shouldNotBeLoggedIn, (req, res) => {
+router.post("/signup", shouldNotBeLoggedIn, upload.single("image"),(req, res) => {
   const { username, password } = req.body;
 
   if (!username) {

@@ -52,7 +52,7 @@ router.post("/new", isLoggedIn, (req, res) => {
                 console.log("NEW created homeplant", createdPlant)
                 // User updaten met plant ID
                 User.findByIdAndUpdate(req.user._id, {
-                    $addToSet: { homePlants: foundPlant._id }
+                    $push: { homePlants: createdPlant }
                 },
                     { new: true }
                 ).then(updatedUser => {
