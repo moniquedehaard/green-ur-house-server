@@ -22,7 +22,12 @@ const userSchema = new Schema(
       ref: Plants
       }
     ],
-    homePlants: [ Object ]
+    homePlants: [
+      {
+      type: ObjectId,
+      ref: Plants
+      }
+    ]
   },
   {
     timestamps: true,

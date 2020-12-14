@@ -221,6 +221,7 @@ router.get("/allInformationUser/:id", (req, res) => {
   User
     .findById(req.params.id)
     .populate("favoritePlants")
+    .populate("homePlants")
     .then(foundUser => {
       console.log('Found User', foundUser)
       res.json({foundUser: foundUser})

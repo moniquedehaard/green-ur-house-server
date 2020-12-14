@@ -42,6 +42,7 @@ router.post("/new", isLoggedIn, (req, res) => {
         .findOne({ latinName: plant })
         .then(foundPlant => {
             console.log('Found plant', foundPlant)
+
             HomePlants.create({
                 nickname: nickname,
                 species: foundPlant._id,
@@ -49,10 +50,10 @@ router.post("/new", isLoggedIn, (req, res) => {
                 notes: notes,
                 user: req.user._id
             }).then(createdPlant => {
-                console.log("NEW created homeplant", createdPlant)
-                // User updaten met plant ID
+                console.log("New created homeplant", createdPlant)
+                // User updaten met created plant ID
                 User.findByIdAndUpdate(req.user._id, {
-                    $push: { homePlants: createdPlant }
+                    $push: { homePlants: createdPlant._id }
                 },
                     { new: true }
                 ).then(updatedUser => {
@@ -86,50 +87,39 @@ router.post("/edit/:id", isLoggedIn, (req, res) => {
                 ).then(updatedHomePlant => {
                 console.log("Updated homeplant", updatedHomePlant)
 
-                // Update user
-                    User.findByIdAndUpdate(req.user._id, {
-                        $addToSet: { homePlants: foundPlant._id }
-                    },
-                        { new: true }
-                    ).then(updatedUser => {
-                        console.log('Updated user', updatedUser);
+                // Update user -  this shouldn't be the case
+                User.findByIdAndUpdate(req.user._id, {
+                    $addToSet: { homePlants: updatedHomePlant._id }
+                },
+                    { new: true }
+                ).then(updatedUser => {
+                    console.log('Updated user', updatedUser);
 
-                        // Send response
-                        res.json(updatedUser)
-                    })
+                    // Send response
+                    res.json(updatedUser)
                 })
+            })
         })
         .catch(err => console.log(err))
 })
 
 
-// Edit home plant
+// Delete home plant
 router.post("/delete/:id", isLoggedIn, (req, res) => {
     console.log(req.user._id)
     const { plant  } = req.body
 
     // Update homeplant
-    HomePlants.findByIdAndRemove(req.params.id).then((rem) => {
-        // find plant
-        Plant.findOne({ latinName: plant })
-            .then(foundPlant => {
-                console.log('Found plant', foundPlant)
-                // else do pull request
-                User.findByIdAndUpdate(req.user._id, {
-                    $pull: { homePlants: foundPlant._id }
-                }, { new: true }
-                ).then(updatedUser => {
-                    console.log('Updated user', updatedUser);
-                    res.json(updatedUser)
-                })
-                //
-                // Find if user has more than one plant of the same species
-                //HomePlants.find({ $and: [{ user: req.user._id }, { species: foundPlant._id }] })
-                //.then(numberHomePlantsSpecies => {
-                //console.log(numberHomePlantsSpecies.length)
-                //Multiple plants of same 
-                //if (numberHomePlantsSpecies.length > 1) {
-            })
+    HomePlants.findByIdAndRemove(req.params.id)
+    .then(() => {
+        // Update user
+        User.findByIdAndUpdate(req.user._id, {
+            $pull: { homePlants: req.params.id }
+        }, { new: true }
+        ).then(updatedUser => {
+            console.log('Updated user', updatedUser);
+            res.json(updatedUser)
+        })
     })
     .catch(err => console.log(err))
 })
