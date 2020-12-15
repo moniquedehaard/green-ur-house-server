@@ -218,6 +218,7 @@ router.patch("/removeFromWishlist/:id", (req, res) => {
 
 // Give all information User (populated)
 router.get("/allInformationUser/:id", (req, res) => {
+  console.log(req.params.id)
   User
     .findById(req.params.id)
     .populate("favoritePlants")

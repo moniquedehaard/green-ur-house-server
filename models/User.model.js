@@ -25,7 +25,7 @@ const userSchema = new Schema(
     homePlants: [
       {
       type: ObjectId,
-      ref: Plants
+      ref: HomePlants
       }
     ]
   },
