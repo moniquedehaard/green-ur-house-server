@@ -34,7 +34,7 @@ const plants = [
         "light": "sun",
         "strongAirPurifier": false,
         "toxicForPets": true,
-        "pictures": ["https://cdn.shopify.com/s/files/1/0761/9483/products/alocasia-zebrina-19-productpage_1024x1024.png?v=1596102344"],
+        "pictures": ["https://plnts.com/wp-content/uploads/2020/03/PL_XL_008_Zebrina_nurse-s.jpg"],
      },
      {
         "name": "Fiddle-leaf Fig",
