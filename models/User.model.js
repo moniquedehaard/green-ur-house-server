@@ -1,4 +1,8 @@
+const mongoose = require('mongoose')
 const { Schema, model } = require("mongoose");
+const ObjectId = Schema.Types.ObjectId;
+const Plants = require("./Plants.model")
+const HomePlants = require("./HomePlants.model")
 
 // TODO: Please make sure you edit the user model to whatever makes sense in this case
 const userSchema = new Schema(
@@ -8,6 +12,22 @@ const userSchema = new Schema(
       unique: true,
     },
     password: String,
+    profilePic: {
+      type: String,
+      default:  ''
+    },
+    favoritePlants: [
+      {
+      type: ObjectId,
+      ref: Plants
+      }
+    ],
+    homePlants: [
+      {
+      type: ObjectId,
+      ref: HomePlants
+      }
+    ]
   },
   {
     timestamps: true,
@@ -17,3 +37,5 @@ const userSchema = new Schema(
 const User = model("User", userSchema);
 
 module.exports = User;
+
+

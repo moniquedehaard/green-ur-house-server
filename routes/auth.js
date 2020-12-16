@@ -10,10 +10,24 @@ const saltRounds = 10;
 // Require the User model in order to interact with the database
 const User = require("../models/User.model");
 const Session = require("../models/Session.model");
+const Plants = require("../models/Plants.model");
+const HomePlants = require("../models/HomePlants.model")
 
 // Require necessary middlewares in order to control access to specific routes
 const shouldNotBeLoggedIn = require("../middlewares/shouldNotBeLoggedIn");
 const isLoggedIn = require("../middlewares/isLoggedIn");
+
+// // Uploading images via icloud
+const multer = require("multer");
+const cloudinary = require("cloudinary");
+const multerStorageCloudinary = require("multer-storage-cloudinary");
+
+const storage = new multerStorageCloudinary.CloudinaryStorage({
+  cloudinary:  cloudinary.v2
+})
+const upload = multer({storage})
+
+
 
 router.get("/session", (req, res) => {
   // we dont want to throw an error, and just maintain the user as null
@@ -34,7 +48,7 @@ router.get("/session", (req, res) => {
     });
 });
 
-router.post("/signup", shouldNotBeLoggedIn, (req, res) => {
+router.post("/signup", shouldNotBeLoggedIn, upload.single("image"),(req, res) => {
   const { username, password } = req.body;
 
   if (!username) {
@@ -159,4 +173,112 @@ router.delete("/logout", isLoggedIn, (req, res) => {
     });
 });
 
+
+// Add plant to wishlist user
+router.patch("/addToWishlist/:id", (req, res) => {
+  console.log('Req from add to wishlist', req.body)
+  const userId = req.params.id
+  const plantId = req.body.plantId
+
+  User
+    .findByIdAndUpdate(userId, {
+        $addToSet: { favoritePlants: plantId }
+      },
+      {
+        new: true
+      }
+    )
+    .then(updatedUser => {
+      console.log('Updated User: ',updatedUser)
+      res.json({updatedUser: updatedUser})
+    })
+    .catch(err => console.log('Error while updating (adding) wishlist plants'))
+})
+
+// Remove plant from wishlist urser
+router.patch("/removeFromWishlist/:id", (req, res) => {
+  console.log('Req from add to wishlist', req.body)
+  const userId = req.params.id
+  const plantId = req.body.plantId
+
+  User
+    .findByIdAndUpdate(userId, {
+        $pull: { favoritePlants: plantId }
+      },
+      {
+        new: true
+      }
+    )
+    .then(updatedUser => {
+      console.log('Updated User: ',updatedUser)
+      res.json({updatedUser: updatedUser})
+    })
+    .catch(err => console.log('Error while updating (removing) wishlist plants'))
+})
+
+// Give all information User (populated)
+router.get("/allInformationUser/:id", (req, res) => {
+  console.log(req.params.id)
+  User
+    .findById(req.params.id)
+    .populate("favoritePlants")
+    .populate("homePlants")
+    .then(foundUser => {
+      console.log('Found User', foundUser)
+      res.json({foundUser: foundUser})
+    })
+    .catch(err => console.log("error", err))
+})
 module.exports = router;
+
+// Add plant to home of user
+router.patch("/addToPlantsHome/:id", (req, res) => {
+  const userId = req.params.id
+  const plantId = req.body.plantId
+
+  // Create a homeplant
+  HomePlants
+  .create({
+    species: plantId,
+    user: userId
+  })
+    .then(plant => {
+      console.log('Home plant added to db', plant)
+      // Update user with homeplant
+      User
+        .findByIdAndUpdate(userId, {
+          $addToSet: { homePlants: plantId }
+        },
+          {
+            new: true
+          }
+        )
+        .then(updatedUser => {
+          console.log('Updated User: ', updatedUser)
+          res.json({ updatedUser: updatedUser })
+        })
+    })
+  .catch(err => console.log("Error while creating new plant",err))
+})
+
+// Remove plant to home of user
+router.patch("/removePlantsHome/:id", (req, res) => {
+  const userId = req.params.id
+  const plantId = req.body.plantId
+
+  // Create a homeplant
+  HomePlants
+    .deleteOne({user: userId, species:plantId})
+    .then(() => {   
+      User.findByIdAndUpdate(userId,
+        {
+          $pull: { homePlants: plantId },
+        },
+        { new: true })
+        .then(updatedUser => {
+          console.log('FOUND USER TEST', updatedUser)
+          res.json({ updatedUser: updatedUser })
+        })
+    })
+  .catch(err => console.log("Error while creating new plant",err))
+})
