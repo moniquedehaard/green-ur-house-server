@@ -168,7 +168,7 @@ const plants = [
     strongAirPurifier: true,
     toxicForPets: false,
     pictures: [
-      "https://cdn.webshopapp.com/shops/30495/files/130048295/kokodama-phlebodium.jpg",
+      "https://res.cloudinary.com/dwhg96emn/image/upload/v1608219021/kokodama-phlebodium_a5d52k.jpg",
     ],
   },
   {
