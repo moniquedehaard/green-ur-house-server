@@ -42,7 +42,9 @@ router.get("/session", (req, res) => {
     .populate("user")
     .then((session) => {
       if (!session) {
-        return res.status(404).json({ errorMessage: "Session does not exist" });
+        return res
+          .status(404)
+          .json({ errorMessage: "Session does not exist" });
       }
       return res.status(200).json(session);
     });
@@ -58,7 +60,9 @@ router.post("/signup", shouldNotBeLoggedIn, upload.single("image"),(req, res) =>
   }
 
   if (password.length < 8) {
-    return res.status(400).json({
+    return res.
+      status(400)
+      .json({
       errorMessage: "Your password needs to be at least 8 characters long.",
     });
   }
@@ -79,7 +83,9 @@ router.post("/signup", shouldNotBeLoggedIn, upload.single("image"),(req, res) =>
   User.findOne({ username }).then((found) => {
     // If the user is found, send the message username is taken
     if (found) {
-      return res.status(400).json({ errorMessage: "Username already taken." });
+      return res
+        .status(400)
+        .json({ errorMessage: "Username already taken." });
     }
 
     // if user is not found, create a new user - start with hashing the password
@@ -98,7 +104,9 @@ router.post("/signup", shouldNotBeLoggedIn, upload.single("image"),(req, res) =>
           user: user._id,
           createdAt: Date.now(),
         }).then((session) => {
-          res.status(201).json({ user, accessToken: session._id });
+          res
+            .status(201)
+            .json({ user, accessToken: session._id });
         });
       })
       .catch((error) => {
@@ -106,7 +114,9 @@ router.post("/signup", shouldNotBeLoggedIn, upload.single("image"),(req, res) =>
           return res.status(400).json({ errorMessage: error.message });
         }
         if (error.code === 11000) {
-          return res.status(400).json({
+          return res
+            .status(400)
+            .json({
             errorMessage:
               "Username need to be unique. The username you chose is already in use.",
           });
@@ -128,7 +138,9 @@ router.post("/login", shouldNotBeLoggedIn, (req, res, next) => {
   // Here we use the same logic as above
   // - either length based parameters or we check the strength of a password
   if (password.length < 8) {
-    return res.status(400).json({
+    return res
+      .status(400)
+      .json({
       errorMessage: "Your password needs to be at least 8 characters long.",
     });
   }
@@ -138,17 +150,22 @@ router.post("/login", shouldNotBeLoggedIn, (req, res, next) => {
     .then((user) => {
       // If the user isn't found, send the message that user provided wrong credentials
       if (!user) {
-        return res.status(400).json({ errorMessage: "Wrong credentials." });
+        return res
+          .status(400)
+          .json({ errorMessage: "Wrong credentials." });
       }
 
       // If user is found based on the username, check if the in putted password matches the one saved in the database
       bcrypt.compare(password, user.password).then((isSamePassword) => {
         if (!isSamePassword) {
-          return res.status(400).json({ errorMessage: "Wrong credentials." });
+          return res
+            .status(400)
+            .json({ errorMessage: "Wrong credentials." });
         }
         Session.create({ user: user._id, createdAt: Date.now() }).then(
           (session) => {
-            return res.json({ user, accessToken: session._id });
+            return res
+              .json({ user, accessToken: session._id });
           }
         );
       });
@@ -165,11 +182,15 @@ router.post("/login", shouldNotBeLoggedIn, (req, res, next) => {
 router.delete("/logout", isLoggedIn, (req, res) => {
   Session.findByIdAndDelete(req.headers.authorization)
     .then(() => {
-      res.status(200).json({ message: "User was logged out" });
+      res
+        .status(200).
+        json({ message: "User was logged out" });
     })
     .catch((err) => {
       console.log(err);
-      res.status(500).json({ errorMessage: err.message });
+      res
+        .status(500)
+        .json({ errorMessage: err.message });
     });
 });
 
