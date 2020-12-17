@@ -42,7 +42,7 @@ const plants = [
     strongAirPurifier: false,
     toxicForPets: true,
     pictures: [
-      "https://res.cloudinary.com/dwhg96emn/image/upload/v1608218658/Fycus-lyrata-vertakking-FB-foto_1024x1024_j9tiku.webp",
+      "https://res.cloudinary.com/dwhg96emn/image/upload/v1608218627/PL_XL_008_Zebrina_nurse-s_jyn3c6.jpg",
     ],
   },
   {
@@ -182,7 +182,7 @@ const plants = [
     strongAirPurifier: true,
     toxicForPets: false,
     pictures: [
-      "https://res.cloudinary.com/dwhg96emn/image/upload/v1608219021/kokodama-phlebodium_a5d52k.jpg",
+      "https://res.cloudinary.com/dwhg96emn/image/upload/v1608219976/phaasia4_fia5iy.jpg",
     ],
   },
   {
